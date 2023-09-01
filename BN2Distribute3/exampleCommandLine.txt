@@ -1,0 +1,2 @@
+./runFile.sh -d /scratch/jnr3hh/BN_subsample/discSMSQ.txt -C TRUE -w /scratch/jnr3hh/BN_subsample/contSMSQ.txt -b /nv/vol192/civeleklab/jordan/BN2Distribute/BN -o /scratch/jnr3hh/BN_subsample/outSMSQ -A civeleklab -e /scratch/jnr3hh/BN_subsample/qtlsSMSQ.txt
+
