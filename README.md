@@ -6,7 +6,7 @@ code for analyses conducted in manuscript by Jordan Reed, Mete Civelek et al, 20
 1. Data QC
 2. iterativeWGCNA 
 3. input geneset selection
-4. write inputs
+4. discretize and write inputs
 
 # Network Construction:
 5. RIMBANET 
