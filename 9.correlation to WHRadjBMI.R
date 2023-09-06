@@ -68,9 +68,9 @@ full= rbind(SFVgenes, SMVgenes, SFSQgenes, SMSQgenes, GMVgenes, GFVgenes, GFSQge
 
 # plot expression in depot and sex
 
-#full %>% 
-select(ANAPC2,PSME3,RSPO1,ANTXR1,TYRO3, net2, depot, sex) %>% 
-  pivot_longer(names_to = "Gene",values_to = "Expression",cols = 1:5) %>% 
+full %>% 
+dplyr::select(ANAPC2,PSME3,RSPO1,TYRO3, net2, depot, sex) %>% 
+  pivot_longer(names_to = "Gene",values_to = "Expression",cols = 1:4) %>% 
   filter(sex == 'female') %>%
   filter(net2 == "GTEx") %>% 
   ggplot(aes(depot, Expression))+ geom_boxplot(color = 'darkred', fatten = 3)+
@@ -259,14 +259,14 @@ wntcor = as.data.frame(cbind(wntMSQcor$cor,wntFSQcor$cor,wntMVcor$cor,wntFVcor$c
 rownames(wntcor) = colnames(wntFSQ)
 wntcor$gene = colnames(wntFSQ)
 colnames(wntcor) = c("MSQ","FSQ","MV","FV", "gene")
-wntcor$gene <- factor(wntcor$gene, levels=c("ANAPC2","ANTXR1","PSME3","RSPO1","TYRO3",'ARFGEF2',"ARMCX3","BAZ1B","BNIP2","HELZ","KIAA1522","MTMR9","ZNF148"))
+wntcor$gene <- factor(wntcor$gene, levels=c("ANAPC2","PSME3","RSPO1","TYRO3","ANTXR1",'ARFGEF2',"ARMCX3","BAZ1B","BNIP2","HELZ","KIAA1522","MTMR9","ZNF148"))
 wntcor = wntcor %>% arrange(gene)
 
 wntpadj = as.data.frame(cbind(wntMSQcor$padj,wntFSQcor$padj,wntMVcor$padj,wntFVcor$padj))
 rownames(wntpadj) = colnames(wntFSQ)
 wntpadj$gene = colnames(wntFSQ)
 colnames(wntpadj) = c("MSQ","FSQ","MV","FV", "gene")
-wntpadj$gene <- factor(wntpadj$gene, levels=c("ANAPC2","ANTXR1","PSME3","RSPO1","TYRO3",'ARFGEF2',"ARMCX3","BAZ1B","BNIP2","HELZ","KIAA1522","MTMR9","ZNF148"))
+wntpadj$gene <- factor(wntpadj$gene, levels=c("ANAPC2","PSME3","RSPO1","TYRO3","ANTXR1",'ARFGEF2',"ARMCX3","BAZ1B","BNIP2","HELZ","KIAA1522","MTMR9","ZNF148"))
 wntpadj = wntpadj %>% arrange(gene)
 wntpadj_ast = wntpadj[,1:4]
 wntpadj_ast$FSQ = ""
@@ -295,7 +295,7 @@ colnames(wntcor) = newx
 
 library(stringr)
 library(pheatmap)
-WntHet = pheatmap((as.matrix(wntcor[,1:4])), cluster_rows = F, cluster_cols = F, fontsize = 8, gaps_row = 5, display_numbers = (as.matrix(wntpadj_ast)))
+WntHet = pheatmap((as.matrix(wntcor[,1:4])), cluster_rows = F, cluster_cols = F, fontsize = 8, gaps_row = 4, display_numbers = (as.matrix(wntpadj_ast)))
 
 
 
@@ -337,5 +337,5 @@ for (i in 1:nrow(mitopadj)){
 
 library(stringr)
 library(pheatmap)
-mitoHet = pheatmap((as.matrix(mitocor[,1:4])), cluster_rows = F, cluster_cols = F, fontsize = 8, gaps_row = c(4,8), display_numbers = (as.matrix(mitopadj_ast2)))
+mitoHet = pheatmap((as.matrix(mitocor[,1:4])), cluster_rows = F, cluster_cols = F, fontsize = 8, gaps_row = c(4,8), display_numbers = (as.matrix(mitopadj_ast)))
 

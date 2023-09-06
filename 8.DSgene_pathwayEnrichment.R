@@ -1,6 +1,9 @@
 # 8. pathway enrichments within downstream geneset
+library(topGO)
+library(org.Hs.eg.db)
 
-keydrivers = kd222$V1
+keydrivers = read.table("53kds.txt", header = F)
+keydrivers = keydrivers$V1
 
 sigRes <- data.frame(GO.ID=character(),
                     Term=character(), 
@@ -14,8 +17,9 @@ sigRes <- data.frame(GO.ID=character(),
 
 
 # run once for each network, switch the file names
-BN = read.table("BN_digraph_pruned_SFV.txt", sep = " ", fill = T)
-IG = graph_from_edgelist(as.matrix(BN[1:nrow(BN),]), directed = T)
+BN = read.table("BN_digraph_pruned_GMV.txt", sep = " ", fill = T)
+BN = BN %>% dplyr::select(!V2)
+IG = graph_from_edgelist(as.matrix(BN), directed = T)
 
 # distance matrix
 dist = distances(IG, v = V(IG), to = V(IG), mode = "out")

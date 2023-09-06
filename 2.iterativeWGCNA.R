@@ -17,7 +17,6 @@ library(cluster)
 library(flashClust)
 options(stringsAsFactors = FALSE);
 enableWGCNAThreads()
-allowWCGNAThreads()
 
 
 #change input, file should be genes on rows, samples on columns
@@ -45,15 +44,14 @@ plot(sampleTree, main = "sample clustering to detect outliers", sub="", xlab="",
      cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 
 # apply a cut after reviewing this plot (where?)
-cut = 200 #maybe change this??????
+cut = 200 
 # Plot a line to show the cut
-pdf(file= "prePro_Null_sample_clustering_to_detect_outliers.pdf", width=12, height=9)
 par(cex = 0.6);
 par(mar = c(0,4,2,0))
 plot(sampleTree, main = "sample clustering to detect outliers", sub="", xlab="", 
      cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
-abline(h = cut, col = "red");
-dev.off()
+abline(h = cut, col = "red")
+
 # Determine cluster under the line
 clust = cutreeStatic(sampleTree, cutHeight = cut, minSize = 10)
 table(clust)

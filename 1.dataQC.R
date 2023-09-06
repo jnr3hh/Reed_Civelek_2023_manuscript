@@ -1,14 +1,13 @@
 #1. Data Preprocessing
 
-setwd("~/Civelek Lab/RIMBANET/Final Net Data/REDO MET SEQ")
+setwd("~/Civelek Lab/") # change to working directory
 library(WGCNA)
-#library(CePa)
 library(dplyr)
 library(stringr)
 library(readxl)
 
 #read in data (input gene exp and annotation data)
-# do on cluster
+# perform on a computing cluster if you can, the file is large
 annotgenes = read_excel("gtexannot.xlsx")
 gtex = read.delim(file = "GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct", skip = 2)
 
@@ -23,38 +22,40 @@ gtexidsV = str_replace_all(gtexidsV, "[-]", ".")
 #select adipose tissue gene expression
 gtexVisc = gtex[,!is.na(match(colnames(gtex),as.character(gtexidsV)))]
 gtexSubq = gtex[,!is.na(match(colnames(gtex),as.character(gtexidsS)))]
+
 #rownames as gene names
-ensNames = gtex$Names
+ensNames = gtex$Name
+ensNames2 = gsub("\\..*","",ensNames)
 geneNames = gtex$Description
 rownames(gtexVisc) = ensNames
 rownames(gtexSubq) = ensNames
-#remove object 
-rm(gtex)
+#remove object to conserve space
+#rm(gtex)
 
 
 # separate males and females
-expgtexVisc = as.numeric(as.character(gtexVisc[rownames(gtexVisc) == 'ENSG00000229807',]))
+expgtexVisc = as.numeric(as.character(gtexVisc[ensNames2 == 'ENSG00000229807',]))
 hist(expgtexVisc, breaks = 100)
 abline(v = 0.5)
-malesVisc = gtexVisc[,expgtexVisc<0.5]
-femalesVisc = gtexVisc[,expgtexVisc>=0.5]
+malesVisc = gtexVisc[,expgtexVisc<1]
+femalesVisc = gtexVisc[,expgtexVisc>=1]
 
-expgtexSubq = as.numeric(as.character(gtexSubq[rownames(gtexSubq) == 'ENSG00000229807',]))
+expgtexSubq = as.numeric(as.character(gtexSubq[ensNames2 == 'ENSG00000229807',]))
 hist(expgtexSubq, breaks = 100)
 abline(v = 0.5)
-malesSubq = gtexSubq[,expgtexSubq<0.5]
-femalesSubq = gtexSubq[,expgtexSubq>=0.5]
+malesSubq = gtexSubq[,expgtexSubq<1]
+femalesSubq = gtexSubq[,expgtexSubq>=1]
 
 
 #which genes are protein coding
 library(biomaRt)
 ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
-MVids = rownames(maleVisc)
-MSids = rownames(maleSubq)
+MVids = rownames(malesVisc)
+MSids = rownames(malesSubq)
 MVidss =  gsub("\\..*","",MVids)
 MSidss =  gsub("\\..*","",MSids)
-FVids = rownames(femaleVisc)
-FSids = rownames(femaleSubq)
+FVids = rownames(femalesVisc)
+FSids = rownames(femalesSubq)
 FVidss =  gsub("\\..*","",FVids)
 FSidss =  gsub("\\..*","",FSids)
 
@@ -70,15 +71,15 @@ annotMS = getBM(attributes = c("ensembl_gene_id", 'external_gene_name', 'gene_bi
 proteincodingMS = annotMS[annotMS$gene_biotype == 'protein_coding',]
 
 #protein coding gene expression
-maleSubq_PC = maleSubq[!is.na(match(MSidss,proteincodingMS$ensembl_gene_id)),]
-maleVisc_PC = maleVisc[!is.na(match(MVidss,proteincodingMV$ensembl_gene_id)),]
-femaleSubq_PC = femaleSubq[!is.na(match(FSidss,proteincodingFS$ensembl_gene_id)),]
-femaleVisc_PC = femaleVisc[!is.na(match(FVidss,proteincodingFV$ensembl_gene_id)),]
+maleSubq_PC = malesSubq[!is.na(match(MSidss,proteincodingMS$ensembl_gene_id)),]
+maleVisc_PC = malesVisc[!is.na(match(MVidss,proteincodingMV$ensembl_gene_id)),]
+femaleSubq_PC = femalesSubq[!is.na(match(FSidss,proteincodingFS$ensembl_gene_id)),]
+femaleVisc_PC = femalesVisc[!is.na(match(FVidss,proteincodingFV$ensembl_gene_id)),]
 
 MVidss_PC = MVidss[!is.na(match(MSidss,proteincodingMS$ensembl_gene_id))]
 MSidss_PC = MSidss[!is.na(match(MVidss,proteincodingMV$ensembl_gene_id))]
-MVidss_PC_short = gsub("\\..*","",Vidss_PC)
-MSidss_PC_short = gsub("\\..*","",Sidss_PC)
+MVidss_PC_short = gsub("\\..*","",MVidss_PC)
+MSidss_PC_short = gsub("\\..*","",MSidss_PC)
 FVidss_PC = FVidss[!is.na(match(FSidss,proteincodingFS$ensembl_gene_id))]
 FSidss_PC = FSidss[!is.na(match(FVidss,proteincodingFV$ensembl_gene_id))]
 FVidss_PC_short = gsub("\\..*","",FVidss_PC)
@@ -120,10 +121,10 @@ for(k in 1:nrow(gtex_fsubq_PC_coll_zero)){
 }
 
 #remove rows with more than 80% zero
-gtex_fsubq_PC_coll_nozero = gtex_fsubq_PC_coll_zero[(FSQsums< ncol(femaleSubq)*0.8),]
-gtex_fvisc_PC_coll_nozero = gtex_fvisc_PC_coll_zero[(FVsums < ncol(femaleVisc)*0.8),]
-gtex_msubq_PC_coll_nozero = gtex_msubq_PC_coll_zero[(MSQsums< ncol(maleSubq)*0.8),]
-gtex_mvisc_PC_coll_nozero = gtex_mvisc_PC_coll_zero[(MVsums < ncol(maleVisc)*0.8),]
+gtex_fsubq_PC_coll_nozero = gtex_fsubq_PC_coll_zero[(FSQsums< ncol(femalesSubq)*0.8),]
+gtex_fvisc_PC_coll_nozero = gtex_fvisc_PC_coll_zero[(FVsums < ncol(femalesVisc)*0.8),]
+gtex_msubq_PC_coll_nozero = gtex_msubq_PC_coll_zero[(MSQsums< ncol(malesSubq)*0.8),]
+gtex_mvisc_PC_coll_nozero = gtex_mvisc_PC_coll_zero[(MVsums < ncol(malesVisc)*0.8),]
 
 
 #log 
@@ -151,6 +152,7 @@ fullStarsubq = Starsubq[,2:574]
 fullStarvisc = Starvisc[,2:532]
 rownames(fullStarvisc) = Vids
 rownames(fullStarsubq) = Sids
+#remove samples without annotation data
 StarsubqS = fullStarsubq %>% select(!subq_missing_ids[2:25])
 StarviscS = fullStarvisc %>% select(!visc_missing_ids[2:23])
 

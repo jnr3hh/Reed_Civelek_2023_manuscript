@@ -44,7 +44,7 @@ inSMSQ = read.table('iterSMSQ.txt', header = T)
 
 
 ######################## determine bayes input geneset ###########################
-
+#remove genes not in modules
 inModGMV = modsGMV$Gene[modsGMV$Module != "UNCLASSIFIED"]
 inModSMV = modsSMV$Gene[modsSMV$Module != "UNCLASSIFIED"]
 inModGFV = modsGFV$Gene[modsGFV$Module != "UNCLASSIFIED"]
@@ -71,7 +71,7 @@ inModGFSQs$Group = 'GFSQ'
 inModSFSQs = modsSFSQ[modsSFSQ$Module != "UNCLASSIFIED",]
 inModSFSQs$Group = 'SFSQ'
 
-
+#find shared membership
 fSQmembership = rbind(inModSFSQs,inModGFSQs)
 fSQccurences = as.data.frame(table(fSQmembership$Gene))
 fSQgenes = fSQccurences$Var1[fSQccurences$Freq==2]
@@ -132,7 +132,7 @@ write.table(MVGenes, "MV Shared Module Genes.txt",quote  = F, row.names = F, sep
 
 
 
-
+# shared genes union set
 conditionSpecific = unique(c(as.character(mVgenes),as.character(fVgenes),as.character(mSQgenes),as.character(fSQgenes)))
 
 #other genesets
@@ -143,7 +143,6 @@ overlap = nearestBFD[!is.na(match(nearestBFD$V1,colocBFD$V1)),]
 GWAS = unique(c(as.character(colocBFD$V1), as.character(nearestBFD$V1)))
 
 unionBFD = unique(c(as.character(conditionSpecific), as.character(nearestBFD$V1),as.character(t(klf14net$V1)), as.character(colocBFD$gene_symbol)))
-length(conditionSpecific[!is.na(match(conditionSpecific, GWAS))])
 
 
 write.table(unionBFD, "allInputNetGenes.txt", quote = F, row.names = F, sep = "\t")

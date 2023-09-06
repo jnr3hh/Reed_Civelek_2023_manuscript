@@ -1,7 +1,7 @@
 # 4. write input files
 
 ######################## find geneset in input files, discretize, write Bayes input files#######
-
+# use file 3 to genenerate inputs
 contGFV = inGFV[!is.na(match(row.names(inGFV), as.character(unionBFD))),]
 contGMV = inGMV[!is.na(match(row.names(inGMV), as.character(unionBFD))),]
 contGFSQ = inGFSQ[!is.na(match(row.names(inGFSQ), as.character(unionBFD))),]
@@ -85,6 +85,7 @@ write.table(qtlsinSetMV, "qtlsSMV.txt", col.names = F, quote = F, row.names = F)
 
 setwd("~/Civelek Lab/RIMBANET/Final Net Data/REDO MET SEQ/STARandGTExNetsFinal/Newest")
 
+#remove column names for RIMBANET
 write.table(discGFSQ, "discGFSQ.txt", col.names = F, quote = F)
 write.table(contGFSQ, "contGFSQ.txt", col.names = F, quote = F)
 write.table(qtlsinSetFSQ, "qtlsGFSQ.txt", col.names = F, quote = F, row.names = F)
